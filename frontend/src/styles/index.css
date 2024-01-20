@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+@layer utilities {
+    .scrollbar::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        background: #cbd5e1;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: #87bce8;
+    }
+
+    /* .scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #0c4a6e;
+    } */
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+}
+
+.dropdown-element {
+    order: -1;
+}
+
+.dropdown:hover .dropdown-element {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+.dropdown-content:hover ~ .dropdown-element {
+    font-size: 1.25rem;
+    text-align: 1.75rem;
+}

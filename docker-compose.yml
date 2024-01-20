@@ -1,0 +1,40 @@
+version: '3.8'
+# 
+services:
+  django:
+    #
+    build: ./backend/
+    # 
+    container_name: backend
+    # 
+    restart: always
+    # 
+    ports:
+      - 8000:8000
+    # 
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    # 
+    volumes:
+      - django_static_volume:/usr/src/app/static
+      - django_media_volume:/usr/src/app/media
+
+  node:
+    # 
+    build: ./frontend/
+    # 
+    container_name: frontend
+    # 
+    restart: always
+    # 
+    ports:
+      - 3000:3000
+    # 
+    command: npm start
+    # 
+    depends_on:
+      - django
+# 
+volumes:
+  django_static_volume:
+  django_media_volume:
