@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/dist/query/react"
-import { IStatement } from "../types/statements"
+import { IStatement, IStatementGroup } from "../types/statements"
 import { customFetchBase } from "./customFetchBase"
 
 export const statementsApi = createApi({
@@ -7,18 +7,28 @@ export const statementsApi = createApi({
 	tagTypes: ["Statements"],
 	baseQuery: customFetchBase,
 	endpoints: (builder) => ({
-		getSatementBySlug: builder.query<IStatement, number>({
-			query: (id) => ({ url: `/statements/${id}/`, method: "GET" }),
+		getStatementById: builder.query<IStatement, number>({
+			query: (id) => ({ url: `/statements/${id}/download/`, method: "GET" }),
+			providesTags: [{ type: "Statements", id: "LIST" }]
 		}),
-		postSatement: builder.mutation<IStatement, IStatement>({
+		postStatementByEvent: builder.mutation<IStatement, {event: string}>({
 			query: (statement) => ({
-				url: `/statements/`,
+				url: `/statements/event/`,
 				method: "POST",
 				body: statement,
 			}),
+			invalidatesTags: [{ type: "Statements", id: "LIST" }],
+		}),
+		postStatementByGroup: builder.mutation<IStatement, IStatementGroup>({
+			query: (statement) => ({
+				url: `/statements/group/`,
+				method: "POST",
+				body: statement,
+			}),
+			invalidatesTags: [{ type: "Statements", id: "LIST" }],
 		}),
 	}),
 })
 
-export const { useGetSatementBySlugQuery, usePostSatementMutation } =
+export const { useGetStatementByIdQuery, usePostStatementByEventMutation, usePostStatementByGroupMutation } =
 	statementsApi

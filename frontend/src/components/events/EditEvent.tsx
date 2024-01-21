@@ -63,8 +63,6 @@ function EditEvent() {
 			  }
 	)
 
-	console.log(inputsValues, event)
-
 	const [touched, setTouched] = useState({
 		name: false,
 		about: false,

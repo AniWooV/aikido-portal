@@ -115,9 +115,7 @@ function UserRegister() {
             //         return prev
             //     })
             // }
-            console.log(inputsValues)
             await registerUser(inputsValues)
-            console.log({registerUser})
             navigate(`/popo`)
 
         }

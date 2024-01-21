@@ -9,7 +9,6 @@ function EditClub() {
     const {slug} = useParams()
     const [addClub] = usePatchClubBySlugMutation()
     const {data: club, isLoading} = useGetClubBySlugQuery(slug? slug : "")
-    console.log(club)
 
     const navigate = useNavigate()
 

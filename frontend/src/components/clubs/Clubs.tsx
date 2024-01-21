@@ -8,8 +8,6 @@ function Clubs() {
 	const [page, setPage] = useState(1)
 	const { data, isLoading } = useGetClubsQuery(page)
 
-	console.log(data)
-
 	return isLoading ? (
 		<div className="font-semibold text-lg">Идет загрузка</div>
 	) : (

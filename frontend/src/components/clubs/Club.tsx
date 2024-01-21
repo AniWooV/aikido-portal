@@ -12,7 +12,6 @@ function Club() {
     const [deleteClub, setDeleteClub] = useState(false)
     const navigate = useNavigate()
 
-    console.log(data)
     return isLoading ? (
 		<div className="font-semibold text-lg">Идет загрузка</div>
 	) : (

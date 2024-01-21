@@ -25,8 +25,6 @@ export const customFetchBase: BaseQueryFn<string | FetchArgs, unknown, FetchBase
 
     const refreshToken = tokenService.getLocalRefreshToken()
 
-    console.log(result, refreshToken);
-
     if (result.error && result.error.status === 401 && refreshToken) {
         if (!mutex.isLocked()) {
             const release = await mutex.acquire()

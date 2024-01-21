@@ -1,14 +1,21 @@
-import { useParams, NavLink, useLocation } from "react-router-dom"
+import { useParams, NavLink, useLocation, Link } from "react-router-dom"
 import {
 	useGetEventBySlugQuery,
+	useGetStatementByEventIdQuery,
+	usePostStatementByEventMutation,
 } from "../../store/apis"
 import { TbArrowNarrowLeft, TbPhotoCancel, TbSettings } from "react-icons/tb"
-import { useState } from "react"
+import { MouseEvent, useState } from "react"
 import { connect } from "react-redux"
 import { IRootState } from "../../store/store"
 import { IProfile } from "../../store/types/profiles"
 import { IEvent } from "../../store/types"
-import { getCorrectDate, isEventOpen, isRegClosed, openInNewTab } from "../../functions"
+import {
+	getCorrectDate,
+	isEventOpen,
+	isRegClosed,
+	openInNewTab,
+} from "../../functions"
 import { IoIosArrowDown } from "react-icons/io"
 import Modal from "../custom/Modal"
 import Dropdown from "../custom/Dropdown"
@@ -25,15 +32,6 @@ function Event({ profile, isAuthenicated }: EventProps) {
 
 	const { data: event } = useGetEventBySlugQuery(slug ? slug : "")
 
-	// const event: IEvent = {
-	// 	about: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, consectetur! Aperiam accusamus assumenda error fugit! Debitis eius natus labore earum. Nisi harum laudantium, mollitia iure pariatur voluptatem quaerat fuga dolor dolorem aspernatur doloremque sed officiis exercitationem doloribus qui, at adipisci, minus officia! Adipisci animi dolores eaque molestias!",
-	// 	name: "XI Центральный семинар по прикладному айкидо",
-	// 	date_start: "2023-01-02",
-	// 	date_end: "2023-01-03",
-	// 	reg_start: "2023-01-01",
-	// 	reg_end: "2023-01-01",
-	// }
-
 	return isEventOpen(event?.date_end ? event.date_end : "") ? (
 		<div className="h-full w-full flex flex-col items-center -mt-[2rem] relative">
 			<div className="w-full bg-sky-500 p-5 pl-[20%] flex flex-col">
@@ -43,7 +41,13 @@ function Event({ profile, isAuthenicated }: EventProps) {
 					{getCorrectDate(event?.date_start ? event.date_start : "")}{" "}
 					- {getCorrectDate(event?.date_end ? event.date_end : "")}
 				</span>
-				<span className={`${isRegClosed(event?.reg_end ? event.reg_end : "") ? "text-red-500" : "text-white"} font-bold text-base`}>
+				<span
+					className={`${
+						isRegClosed(event?.reg_end ? event.reg_end : "")
+							? "text-red-500"
+							: "text-white"
+					} font-bold text-base`}
+				>
 					Регистрация:{" "}
 					{getCorrectDate(event?.reg_start ? event.reg_start : "")} -{" "}
 					{getCorrectDate(event?.reg_end ? event.reg_end : "")}

@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { IEvent, IEventList } from "../types/events"
 import { customFetchBase } from "./customFetchBase";
+import { IDownloadStatement } from "../types";
 
 export const eventsApi = createApi({
 	reducerPath: "eventsApi",
@@ -85,6 +86,10 @@ export const eventsApi = createApi({
 			}),
 			invalidatesTags: [{ type: "Events", id: "LIST" }],
 		}),
+		getStatementByEventId: builder.query<IDownloadStatement, number>({
+			query: (id) => ({ url: `/events/${id}/statement`, method: "GET" }),
+			providesTags: [{ type: "Events", id: "LIST" }]
+		}),
 	}),
 })
 
@@ -97,4 +102,5 @@ export const {
 	usePatchOrganizersToEventMutation,
 	usePostEventMutation,
 	useGetEventsByFilterQuery,
+	useGetStatementByEventIdQuery,
 } = eventsApi

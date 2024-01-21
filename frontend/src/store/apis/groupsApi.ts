@@ -10,7 +10,7 @@ import { customFetchBase } from './customFetchBase';
 
 export const groupsApi = createApi({
 	reducerPath: "groupsApi",
-	tagTypes: ["Groups"],
+	tagTypes: ["Groups", "Statements"],
 	baseQuery: customFetchBase,
 	endpoints: (builder) => ({
 		getGroups: builder.query<IGroupList, number>({
@@ -84,7 +84,7 @@ export const groupsApi = createApi({
 				url: `/trainer-groups/${slug}?page=${page}`,
 				method: "GET",
 			}),
-			providesTags: [{ type: "Groups", id: "LIST" }],
+			providesTags: [{ type: "Groups", id: "LIST" }, {type: "Statements", id: "LIST"}],
 		}),
 		deleteGroupMember: builder.mutation<void, string>({
 			query: (slug) => ({ url: `/clubs/group-member-delete/${slug}/`, method: "DELETE" }),

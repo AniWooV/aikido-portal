@@ -28,8 +28,6 @@ function MyProfile({ isAuthenticated }: MyProfileProps) {
 	const { data: group, isLoading: groupIsLoading } = useGetGroupBySlugQuery(
 		profile?.group ? profile?.group : ""
 	)
-
-	console.log(club, group);
 	
 
 	const rankProps = getRankProps(profile?.rank?.name || "")
@@ -133,7 +131,7 @@ function MyProfile({ isAuthenticated }: MyProfileProps) {
 						})}
 					</div>
 				</Dropdown>
-				<Dropdown title="Мои мероприятия" defaultShow={true}>
+				<Dropdown title="Мои мероприятия" defaultShow={false}>
 					<>{"..."}</>
 				</Dropdown>
 				<div className="flex flex-row gap-4">

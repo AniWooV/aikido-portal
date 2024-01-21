@@ -18,9 +18,7 @@ interface ITrainerProps {
 }
 
 function User({ profile }: ITrainerProps) {
-	const [fuckMyBalls, {data : profileData, error: fuckMyError}] = usePatchProfileBySlugMutation()
-	console.log(profileData, fuckMyError)
-	
+	const [fuckMyBalls, {data : profileData, error: fuckMyError}] = usePatchProfileBySlugMutation()	
 
 	return (
 		<div className="">

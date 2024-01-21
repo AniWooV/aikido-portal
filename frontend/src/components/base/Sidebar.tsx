@@ -37,7 +37,6 @@ function Sidebar(props: SidebarProps) {
 
 	useEffect(() => {
 		window.addEventListener("resize", handleResize)
-		console.log("cringe");
 	})
 
 	const { logOut } = useActions()

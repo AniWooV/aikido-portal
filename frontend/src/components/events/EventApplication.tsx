@@ -1,115 +1,86 @@
-import { useLocation, useParams } from "react-router-dom"
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom"
 import { getAge, getCorrectDate } from "../../functions"
-import { IEvent } from "../../store/types"
 import Dropdown from "../custom/Dropdown"
-import { useState } from "react"
+import { MouseEvent, useState, useEffect } from "react"
 import { getRankProps } from "../../functions/getRankProps"
+import {
+	useGetEventBySlugQuery,
+	useGetStatementByEventIdQuery,
+	useGetTrainerGroupBySlugQuery,
+	useGetTrainerGroupsQuery,
+	usePostStatementByEventMutation,
+	usePostStatementByGroupMutation,
+} from "../../store/apis"
+import { RxCross2, RxPlus } from "react-icons/rx"
+import { IEvent, IStatementMember } from "../../store/types"
 
 function EventApplicaition() {
-	const location = useLocation()
+	const navigate = useNavigate()
 
 	const { slug } = useParams()
 
-	const [activeGroup, setActiveGroup] = useState("")
+	const { data: event } = useGetEventBySlugQuery(slug ? slug : "")
 
-	const event: IEvent = {
-		about: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, consectetur! Aperiam accusamus assumenda error fugit! Debitis eius natus labore earum. Nisi harum laudantium, mollitia iure pariatur voluptatem quaerat fuga dolor dolorem aspernatur doloremque sed officiis exercitationem doloribus qui, at adipisci, minus officia! Adipisci animi dolores eaque molestias!",
-		name: "XI Центральный семинар по прикладному айкидо",
-		date_start: "2023-01-02",
-		date_end: "2023-01-03",
-		reg_start: "2023-01-01",
-		reg_end: "2023-01-01",
+	const { data: groups } = useGetTrainerGroupsQuery(1)
+
+	const [activeGroup, setActiveGroup] = useState(
+		groups?.results[0].slug || ""
+	)
+
+	const { data: chosenGroup } = useGetTrainerGroupBySlugQuery({
+		slug: activeGroup,
+		page: 1,
+	})
+
+	const [createStatement, { data: createdStatement }] =
+		usePostStatementByGroupMutation()
+
+	const [eventMembers, setEventMembers] = useState(event?.members || [])
+
+	useEffect(() => {
+		setEventMembers(structuredClone(event?.members) || [])
+	}, [event])
+
+	console.log(eventMembers)
+
+	async function handleSubmit(event123: MouseEvent<HTMLButtonElement>) {
+		event123.preventDefault()
+
+		const statementmember_set: IStatementMember[] = eventMembers.map<IStatementMember>((id) => {
+			return {member: id, attestation: event?.is_attestation || false, seminar: event?.is_seminar || false}
+		})
+
+		await createStatement({ event: event?.id || 0, statementmember_set: statementmember_set}).unwrap()
+
+		navigate(`/events/${event?.slug}/participants`)
 	}
-
-	const groups = [
-		{
-			name: "Бебрики1",
-		},
-		{
-			name: "Бебрики2",
-		},
-		{
-			name: "Бебрики3",
-		},
-		{
-			name: "Бебрики4",
-		},
-		{
-			name: "Бебрики5",
-		},
-	]
-
-	const members = [
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-		{
-			first_name: "Иван",
-			last_name: "Тытенко",
-			mid_name: "Дмитриевич",
-			rank: "1 дан",
-			birth_date: "2002-11-03",
-		},
-	]
 
 	return (
 		<div className="h-full w-full flex flex-col items-center -mt-[2rem] relative">
 			<div className="w-full bg-sky-500 p-5 pl-[20%] flex flex-col">
 				<h1 className="text-white font-bold text-3xl">{event?.name}</h1>
 				<span className="text-white font-bold text-base">
-					Даты проведения: {getCorrectDate(event?.date_start)} -{" "}
-					{getCorrectDate(event?.date_end)}
+					Даты проведения: {getCorrectDate(event?.date_start || "")} -{" "}
+					{getCorrectDate(event?.date_end || "")}
 				</span>
 				<span className="text-white font-bold text-base">
-					Регистрация: {getCorrectDate(event?.reg_start)} -{" "}
-					{getCorrectDate(event?.reg_end)}
+					Регистрация: {getCorrectDate(event?.reg_start || "")} -{" "}
+					{getCorrectDate(event?.reg_end || "")}
 				</span>
 			</div>
 			<div className="w-[50rem] flex flex-col mt-4 gap-4">
 				<Dropdown title="Выбрать группу" defaultShow={true}>
 					<div className="w-full flex flex-row gap-2">
-						{groups.map((group, index) => {
+						{groups?.results.map((group, index) => {
 							return (
 								<div
 									key={index}
 									className={`cursor-pointer text-base font-medium border-sky-500 border-2 rounded-md p-1 transition-all duration-300 ${
-										activeGroup === group.name
+										activeGroup === group.slug
 											? "bg-sky-500 text-white"
 											: "bg-white text-black"
 									}`}
-									onClick={() => setActiveGroup(group.name)}
+									onClick={() => setActiveGroup(group.slug)}
 								>
 									{group.name}
 								</div>
@@ -119,38 +90,92 @@ function EventApplicaition() {
 				</Dropdown>
 				<Dropdown title="Список участников" defaultShow={true}>
 					<div className="w-full flex flex-col gap-4">
-						{members.map((member, index) => {
-							const rankProps = getRankProps(member.rank)
+						{chosenGroup?.results[0].groupmember_set?.map(
+							(member, index) => {
+								const rankProps = getRankProps(member.rank)
 
-							return (
-								<div
-									key={index}
-									className="w-full shadow-md flex flex-row"
-								>
-									<div className="p-2 flex-1 border-r-[1px] border-sky-500 text-xl font-medium">
-										{member.last_name} {member.first_name}{" "}
-										{member.mid_name}
-									</div>
-									<div className="flex flex-col p-2 w-[10rem] border-x-[1px] border-sky-500 text-xl gap-1">
-										<div
-											className={`${rankProps.backgroundColor} ${rankProps.textColor} text-lg rounded-md text-center font-medium`}
-										>
-											{rankProps.text}
+								return (
+									<div
+										key={index}
+										className="w-full bg-white shadow-md flex flex-row"
+									>
+										<div className="p-2 flex-1 border-r-[1px] border-sky-500 text-xl font-medium">
+											{member.last_name}{" "}
+											{member.first_name}{" "}
+											{member.mid_name}
+										</div>
+										<div className="flex flex-col p-2 w-[10rem] border-x-[1px] border-sky-500 text-xl gap-1">
+											<div
+												className={`${rankProps.backgroundColor} ${rankProps.textColor} text-lg rounded-md text-center font-medium`}
+											>
+												{rankProps.text}
+											</div>
+										</div>
+										<div className="p-2 flex justify-center items-center border-l-[1px] border-sky-500 text-xl font-medium">
+											{eventMembers?.includes(
+												member.id
+											) ? (
+												<RxCross2
+													className="bg-red-500 text-white rounded-full cursor-pointer"
+													onClick={() =>
+														setEventMembers(
+															(prev) => {
+																let newMembers =
+																	[
+																		...prev.filter(
+																			(
+																				e
+																			) =>
+																				e !==
+																				member.id
+																		),
+																	]
+
+																return newMembers
+															}
+														)
+													}
+												/>
+											) : (
+												<RxPlus
+													className="bg-green-500 text-white rounded-full cursor-pointer"
+													onClick={() =>
+														setEventMembers(
+															(prev) => {
+																let newMembers =
+																	[...prev]
+
+																newMembers.push(
+																	member.id
+																)
+
+																return newMembers
+															}
+														)
+													}
+												/>
+											)}
 										</div>
 									</div>
-									<div className="p-2 w-[5rem] border-l-[1px] border-sky-500 text-xl font-medium">
-										{getAge(member.birth_date)} лет
-									</div>
-									<div className="p-2 w-[10rem] border-l-[1px] border-sky-500 text-lg font-medium">
-										<button className="w-full text-center rounded-md bg-green-500 text-white">
-											Добавить
-										</button>
-									</div>
-								</div>
-							)
-						})}
+								)
+							}
+						)}
 					</div>
 				</Dropdown>
+				<div className="flex flex-row gap-4">
+					<NavLink
+						to={`/events/${event?.slug}`}
+						className="text-center mt-4 p-1 px-4 bg-slate-500 hover:bg-slate-400 text-white transition-all duration-300 rounded-md text-lg font-medium flex-1"
+					>
+						Вернуться
+					</NavLink>
+					<button
+						onClick={handleSubmit}
+						className="text-center mt-4 p-1 px-4 bg-sky-500 hover:bg-sky-400 text-white transition-all duration-300 rounded-md text-lg font-medium flex-1"
+					>
+						Зарегистрировать
+					</button>
+				</div>
 			</div>
 		</div>
 	)
